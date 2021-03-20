@@ -1,7 +1,10 @@
 import axios from 'axios'
+import dotenv from 'dotenv'
 
+dotenv.config()
+console.log(process.env)
 const api = axios.create({
-    baseURL: 'https://laty-rpg-interface.herokuapp.com/api',
+    baseURL: process.env.REACT_APP_BACKEND_API_URL,
 })
 
 export const insertCharacter = payload => api.post(`/character`, payload)

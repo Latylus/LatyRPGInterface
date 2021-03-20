@@ -1,7 +1,12 @@
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+
+dotenv.config()
+
+console.log(process.env.MONGODB_URI)
 
 mongoose
-    .connect('mongodb://127.0.0.1:27017/rpg-db', { useNewUrlParser: true })
+    .connect(process.env.MONGODB_URI, { useNewUrlParser: true , useUnifiedTopology: true })
     .catch(e => {
         console.error('Connection error', e.message)
     })
