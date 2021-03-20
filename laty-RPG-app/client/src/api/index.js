@@ -2,7 +2,6 @@ import axios from 'axios'
 import dotenv from 'dotenv'
 
 dotenv.config()
-console.log(process.env)
 const api = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_API_URL,
 })

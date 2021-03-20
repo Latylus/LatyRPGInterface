@@ -77,7 +77,7 @@ class CharactersList extends Component {
 
     render() {
         const { characters, isLoading } = this.state
-        console.log('TCL: CharactersList -> render -> characters', characters)
+        // console.log('TCL: CharactersList -> render -> characters', characters)
 
         const columns = [
             {
@@ -123,8 +123,6 @@ class CharactersList extends Component {
                 },
             }
         ]
-        
-        console.log('TCL: CharactersList -> render -> columns', columns)
 
         let showTable = true
         if (!characters.length) {

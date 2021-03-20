@@ -107,7 +107,6 @@ getCharacters = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
-        // console.log(characters)
         if (!characters) {
             return res
                 .status(404)
