@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://laty-rpg-interface.herokuapp.com/api',
 })
 
 export const insertCharacter = payload => api.post(`/character`, payload)
