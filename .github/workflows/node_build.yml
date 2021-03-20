@@ -28,10 +28,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install client dependencies
       run: npm ci
-      working-directory: ./client
+      working-directory: ./laty-RPG-app/client
     - name: Install server dependencies
       run: npm ci
-      working-directory: ./server
+      working-directory: ./laty-RPG-app/server
     - run: npm run build --if-present
-      working-directory: ./server
+      working-directory: ./laty-RPG-app/server
     - run: npm test
