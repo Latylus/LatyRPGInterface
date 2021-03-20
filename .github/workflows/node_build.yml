@@ -54,6 +54,6 @@ jobs:
         # The app name to use for deploying/updating
         app_name: ${{ secrets.HEROKU_APP_NAME }}
         # The Heroku branch name that you would like to deploy to (`master` or `main`).
-        heroku_branch: main
+        heroku_branch: master
         # The subfolder where your built code is sitted, e.g. `dist`.
         subfolder: ./laty-RPG-app/server
