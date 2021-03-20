@@ -36,8 +36,24 @@ jobs:
       working-directory: ./laty-RPG-app/server
     #- run: npm test
     
-    - name: Add remote origin
-      run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+    #- name: Add remote origin
+     # run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
 
-    - name: Deploy backend to heroku
-      run: git push --force heroku `git subtree split --prefix laty-RPG-app/server HEAD`:master
+    #- name: Deploy backend to heroku
+    #  run: git push --force heroku `git subtree split --prefix laty-RPG-app/server HEAD`:main
+    
+    - name: Git deploy to Heroku
+      # You may pin to the exact commit or the version.
+      # uses: onekiloparsec/heroku-node-deploy-subfolder@85d5701f800be8126e12b7f6f47e965c71f67b56
+      uses: onekiloparsec/heroku-node-deploy-subfolder@v1.1.0
+      with:
+        # Your Heroku API key. This will be used for authentication. You can find it in your Heroku account settings
+        api_key: ${{ secrets.HEROKU_API_KEY }}
+        # The email of your Heroku account (needed for auth).
+        email: pierre.lataillade@gmail.com
+        # The app name to use for deploying/updating
+        app_name: ${{ secrets.HEROKU_APP_NAME }}
+        # The Heroku branch name that you would like to deploy to (`master` or `main`).
+        heroku_branch: main
+        # The subfolder where your built code is sitted, e.g. `dist`.
+        subfolder: ./laty-RPG-app/server
