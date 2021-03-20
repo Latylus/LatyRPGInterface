@@ -37,10 +37,10 @@ jobs:
           ${{ runner.OS }}-
     - name: Install client dependencies
       run: npm ci
-      working-directory: client
+      working-directory: ./client
     - name: Install server dependencies
       run: npm ci
-      working-directory: server
+      working-directory: ./server
     - run: npm run build --if-present
-      working-directory: server
+      working-directory: ./server
     - run: npm test
