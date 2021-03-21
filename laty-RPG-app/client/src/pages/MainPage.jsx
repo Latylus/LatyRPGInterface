@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
-import {Button, CardDeck} from 'react-bootstrap'
+import {Button, CardDeck, Row} from 'react-bootstrap'
 import api from '../api'
 import CharacterCard from './CharacterCard'
 
@@ -46,7 +46,7 @@ class MainPage extends Component {
         // var associatedCharacters = this.state.playerLoggedIn && this.state.allCharacters.filter(char =>this.state.playerLoggedIn.associatedCharacters.some(id => id === char._id))
 
         return(
-            <div className = "container">
+            <div className = "container" style = {{height:"100vh"}}>
                 <div className = "row justify-content-md-end">
                     {this.state.playerLoggedIn && (
                         <Button 
@@ -55,7 +55,7 @@ class MainPage extends Component {
                         onClick = {() => this.setState({playerLoggedIn : null})}>Change player</Button>
                     )}
                 </div>
-                <div className = "row justify-content-md-center">
+                <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
                     {!this.state.playerLoggedIn && (
                         <Select className = "mt-4 col-md-3"
                         options = {this.state.allPlayers.map(player => {return {value : player._id, label : player.name}})}
@@ -63,12 +63,16 @@ class MainPage extends Component {
                         onChange = {(selectedOption) => {this.setState({playerLoggedIn : this.state.allPlayers.find(player => player._id === selectedOption.value)})}}
                     />
                     )}
-                    <CardDeck>
+                    <CardDeck className = "d-flex flex-nowrap">
                     {this.state.playerLoggedIn && this.state.playerLoggedIn.associatedCharacters.map(char_id =>
-                        <CharacterCard key={char_id} character_id = {char_id}/>)
+                        <CharacterCard 
+                        key={char_id} 
+                        character_id = {char_id}
+                        discordWebhook = {this.state.playerLoggedIn.discordWebhook}
+                        playerName = {this.state.playerLoggedIn.name} />)
                     }
                     </CardDeck>                
-                </div>
+                </Row>
             </div>)        
     }
 }

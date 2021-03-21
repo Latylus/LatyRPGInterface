@@ -20,6 +20,7 @@ export const getPlayerById = id => api.get(`/player/${id}`)
 export const addCharacterToPlayer = (id, character_id) => api.get(`/player/${id}/add_character/${character_id}`)
 export const removeCharacterFromPlayer =  (id, character_id) => api.get(`/player/${id}/remove_character/${character_id}`)
 
+export const sendDiscordMessage = payload => api.post(`/discord`, payload)
 
 const apis = {
     insertCharacter,
@@ -34,6 +35,7 @@ const apis = {
     getPlayerById,
     addCharacterToPlayer,
     removeCharacterFromPlayer,
+    sendDiscordMessage,
 }
 
 export default apis

@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 function App() {
     return (
         <Router>
-            <NavBar />
+            {/* <NavBar /> */}
             <Switch>
                 
                 <Route path="/characters/list" exact component={CharactersList} />

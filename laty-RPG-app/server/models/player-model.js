@@ -6,6 +6,7 @@ const Player = new Schema(
         name: { type: String, required: true },
         isGameMaster: { type: Boolean, required: true },
         associatedCharacters:  [{type: Schema.Types.ObjectId, ref : 'characters'}],
+        discordWebhook: {type: String, required: true}
     },
     { timestamps: true },
 )

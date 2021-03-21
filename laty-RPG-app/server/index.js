@@ -8,6 +8,7 @@ dotenv.config()
 const db = require('./db')
 const characterRouter = require('./routes/character-router')
 const playerRouter = require('./routes/player-router')
+const discordRouter = require('./routes/discord-router')
 
 const app = express()
 const apiPort = process.env.LOCAL_PORT || process.env.PORT
@@ -24,5 +25,6 @@ app.get('/', (req, res) => {
 
 app.use('/api', characterRouter)
 app.use('/api', playerRouter)
+app.use('/api', discordRouter)
 
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
