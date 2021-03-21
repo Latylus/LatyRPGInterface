@@ -1,6 +1,7 @@
 const Character = require('../models/character-model')
+const Player = require('../models/player-model')
 
-createCharacter = (req, res) => {
+createCharacter = async (req, res) => {
     const body = req.body
 
     if (!body) {
@@ -15,6 +16,24 @@ createCharacter = (req, res) => {
     if (!character) {
         return res.status(400).json({ success: false, error: err })
     }
+
+    //add character to dms list
+    await Player.find({isGameMaster : true}, (err, gameMasters) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (gameMasters) {
+            gameMasters.forEach(GM =>{
+                GM.associatedCharacters.push(character._id)
+                GM.save().catch(error => {
+                    return res.status(400).json({
+                        error,
+                        message: 'Failed to update GMs, character not created',
+                    })
+                })
+            })
+        }
+    }).catch(err => console.log(err))
 
     character
         .save()
@@ -82,9 +101,29 @@ deleteCharacter = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Character not found` })
         }
-
-        return res.status(200).json({ success: true, data: character })
+      
     }).catch(err => console.log(err))
+
+    //remove character from dms list
+    await Player.find({isGameMaster : true}, (err, gameMasters) => {
+
+        if (gameMasters) {
+            gameMasters.forEach(GM => {
+                foundIndex = GM.associatedCharacters.indexOf(character._id)
+                if(foundIndex > -1){
+                    GM.associatedCharacters.splice(foundIndex, 1)
+                }
+                GM.save().catch(error => {
+                    return res.status(400).json({
+                        error,
+                        message: 'Failed to update GMs, character was deleted',
+                    })
+                })
+            })
+        }
+    }).catch(err => console.log(err))
+
+    return res.status(200).json({ success: true, data: character })
 }
 
 getCharacterById = async (req, res) => {
