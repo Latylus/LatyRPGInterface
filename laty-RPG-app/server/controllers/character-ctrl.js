@@ -127,6 +127,10 @@ deleteCharacter = async (req, res) => {
 }
 
 getCharacterById = async (req, res) => {
+    // await 
+    // new Promise((resolve) => {
+    //     setTimeout(resolve, 1000)
+    // })
     await Character.findOne({ _id: req.params.id }, (err, character) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })

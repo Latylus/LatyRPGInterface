@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
-import {Button} from 'react-bootstrap'
+import {Button, CardDeck} from 'react-bootstrap'
 import api from '../api'
+import CharacterCard from './CharacterCard'
 
 // import styled from 'styled-components'
 
@@ -42,7 +43,7 @@ class MainPage extends Component {
         // const { characters, isLoading } = this.state
         // console.log('TCL: CharactersList -> render -> characters', characters)
 
-        var associatedCharacters = this.state.playerLoggedIn && this.state.allCharacters.filter(char =>this.state.playerLoggedIn.associatedCharacters.some(id => id === char._id))
+        // var associatedCharacters = this.state.playerLoggedIn && this.state.allCharacters.filter(char =>this.state.playerLoggedIn.associatedCharacters.some(id => id === char._id))
 
         return(
             <div className = "container">
@@ -62,9 +63,11 @@ class MainPage extends Component {
                         onChange = {(selectedOption) => {this.setState({playerLoggedIn : this.state.allPlayers.find(player => player._id === selectedOption.value)})}}
                     />
                     )}
-                    {associatedCharacters && associatedCharacters.map(char => 
-                        <a key={char._id}>{char.name}</a>
-                    )}                
+                    <CardDeck>
+                    {this.state.playerLoggedIn && this.state.playerLoggedIn.associatedCharacters.map(char_id =>
+                        <CharacterCard key={char_id} character_id = {char_id}/>)
+                    }
+                    </CardDeck>                
                 </div>
             </div>)        
     }
