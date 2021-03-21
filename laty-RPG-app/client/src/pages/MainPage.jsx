@@ -45,8 +45,8 @@ class MainPage extends Component {
         var associatedCharacters = this.state.playerLoggedIn && this.state.allCharacters.filter(char =>this.state.playerLoggedIn.associatedCharacters.some(id => id === char._id))
 
         return(
-            <div class = "container">
-                <div class = "row justify-content-md-end">
+            <div className = "container">
+                <div className = "row justify-content-md-end">
                     {this.state.playerLoggedIn && (
                         <Button 
                         variant="dark" 
@@ -54,7 +54,7 @@ class MainPage extends Component {
                         onClick = {() => this.setState({playerLoggedIn : null})}>Change player</Button>
                     )}
                 </div>
-                <div class = "row justify-content-md-center">
+                <div className = "row justify-content-md-center">
                     {!this.state.playerLoggedIn && (
                         <Select className = "mt-4 col-md-3"
                         options = {this.state.allPlayers.map(player => {return {value : player._id, label : player.name}})}
