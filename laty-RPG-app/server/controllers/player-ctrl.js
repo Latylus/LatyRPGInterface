@@ -148,6 +148,11 @@ getPlayerById = async (req, res) => {
 }
 
 getPlayers = async (req, res) => {
+    // await 
+    //     new Promise((resolve) => {
+    //         setTimeout(resolve, 10000)
+    //     })
+    
     await Player.find({}, (err, players) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
