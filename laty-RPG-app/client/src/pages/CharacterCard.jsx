@@ -73,7 +73,7 @@ class CharacterCard extends Component {
             // "content": body.message,
             embeds: [{
                 title: `A strength roll was requested by ${this.state.player.name}`,
-                description: `Result : ${ rollValue + this.state.character.strength} = ${rollValue} (1d20) + ${this.state.character.strength} (STR)`
+                description: `Result : ${ +rollValue + +this.state.character.strength} = ${rollValue} (1d20) + ${this.state.character.strength} (STR)`
             }]
         }        
 
