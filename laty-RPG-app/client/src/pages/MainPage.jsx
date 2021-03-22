@@ -180,8 +180,10 @@ class MainPage extends Component {
                 <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
                     {!this.state.playerLoggedIn && (
                         <Select className = "mt-4 col-md-3"
-                        options = {this.state.allPlayers.map(player => {return {value : player._id, label : player.name}})}
+                        options = { [{label : "Players", options : this.state.allPlayers.filter(player => !player.isGameMaster).map(player => {return {value : player._id, label : player.name}})}, 
+                        {label : "Gamemasters", options :this.state.allPlayers.filter(player => player.isGameMaster).map(player => {return {value : player._id, label : player.name}}) }]}
                         isLoading = {this.state.isLoading}
+                        placeholder = "Select a player"
                         onChange = {(selectedOption) => {this.componentDidMount()
                             this.setState({playerLoggedIn : this.state.allPlayers.find(player => player._id === selectedOption.value)})}}
                     />
