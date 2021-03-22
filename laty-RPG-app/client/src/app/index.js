@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import { NavBar } from '../components'
 import { CharactersList, CharactersInsert, CharactersUpdate, MainPage } from '../pages'
 
 import 'bootstrap/dist/css/bootstrap.min.css'

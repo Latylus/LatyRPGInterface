@@ -12,7 +12,7 @@ export const updateCharacterById = (id, payload) => api.put(`/character/${id}`, 
 export const deleteCharacterById = id => api.delete(`/character/${id}`)
 export const getCharacterById = id => api.get(`/character/${id}`)
 
-export const addPlayer = payload => api.post(`/player`, payload)
+export const createPlayer = payload => api.post(`/player`, payload)
 export const getAllPlayers = () => api.get(`/players`)
 export const updatePlayerById = (id, payload) => api.put(`/player/${id}`, payload)
 export const deletePlayerById = id => api.delete(`/player/${id}`)
@@ -28,7 +28,7 @@ const apis = {
     updateCharacterById,
     deleteCharacterById,
     getCharacterById,
-    addPlayer,
+    createPlayer,
     getAllPlayers,
     updatePlayerById,
     deletePlayerById,

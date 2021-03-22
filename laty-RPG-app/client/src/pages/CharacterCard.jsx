@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner} from 'react-bootstrap'
+import {Button, Card, Spinner, Row} from 'react-bootstrap'
+import Select from 'react-select'
 import api from '../api'
 
 import styled from 'styled-components'
@@ -21,22 +22,33 @@ class CharacterCard extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            character_id : this.props.character_id,
-            character: null,
+            character: this.props.character,
             discordWebhook : this.props.discordWebhook,
-            playerName : this.props.playerName,
-            editMode : false
+            player : this.props.player,
+            players : [],
+            editMode : false,
         }
     }
 
     componentDidMount = async () => {
         this.setState({ isLoading: true })
 
-        await api.getCharacterById(this.state.character_id).then(character => {
+        await api.getCharacterById(this.state.character._id).then(character => {
             // console.log('requested API')
             if(character.data.data){
                 this.setState({
                     character: character.data.data,
+                })
+            }
+        })
+
+        
+        await api.getAllPlayers().then(players => {
+            // console.log('requested API')
+            if(players.data.data){
+                this.setState({
+                    players: players.data.data,
+                    isLoading : false,
                 })
             }
         })
@@ -47,8 +59,12 @@ class CharacterCard extends Component {
             webhook : this.state.discordWebhook,
             message : discordMessage
         }
-
-        await api.sendDiscordMessage(payload).then(res => {})
+        if(this.state.discordWebhook){
+            await api.sendDiscordMessage(payload).then(res => {})
+        }
+        else{
+            window.alert(`You haven't setup your discord webhook correctly`)
+        }
     }
 
     handleStrengthClick = async () => {
@@ -56,7 +72,7 @@ class CharacterCard extends Component {
         const message = {
             // "content": body.message,
             embeds: [{
-                title: `A strength roll was requested by ${this.state.playerName}`,
+                title: `A strength roll was requested by ${this.state.player.name}`,
                 description: `Result : ${ rollValue + this.state.character.strength} = ${rollValue} (1d20) + ${this.state.character.strength} (STR)`
             }]
         }        
@@ -69,7 +85,21 @@ class CharacterCard extends Component {
         await api.updateCharacterById(this.state.character._id, this.state.character).then(res => {
             // window.alert(`Character updated successfully`)
         })
+    }    
+    
+    handleDeleteCharacter = async () => {
+        if (
+            window.confirm(
+                `Do tou want to delete the character ${this.state.character.name} permanently?`,
+            )
+        ) {
+            await api.deleteCharacterById(this.state.character._id).then(() => {
+                this.props.refreshCharacters()
+                // this.componentWillUnmount()
+            })
+        }
     }
+
     editCharacterFieldInput = (field, label) => {
         const value = this.state.character[field]
         return(
@@ -102,9 +132,12 @@ class CharacterCard extends Component {
         }
 
         return(           
-            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"min-width" : '40rem'}}>
+            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '40rem'}}>
                 <Card.Header>
-                    <Card.Title>{this.state.character.name}</Card.Title>
+                    <Card.Title>
+                        {!this.state.editMode && this.state.character.name}
+                        {this.state.editMode && (<InputText type = 'string' value= {this.state.character.name} onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/>)}
+                    </Card.Title>
                 </Card.Header>
                 {!this.state.editMode && (
                     <Card.Body>
@@ -114,9 +147,19 @@ class CharacterCard extends Component {
                 {this.state.editMode && (                    
                     <Card.Body>
                         {this.editCharacterFieldInput('strength', 'STR : ')}
+                        {this.state.player.isGameMaster && (
+                            <Row className = "mt-4">
+                                <Label>Player</Label>
+                                <Select className = "col-md-4"
+                                options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
+                                value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
+                                isLoading = {this.state.isLoading}
+                                onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
+                            </Row>
+                        )}
                     </Card.Body>
                 )}
-                <Card.Body>
+                <Card.Footer>
                     {this.state.editMode && (
                         <div className="ui two buttons">
                         <Button variant="success" onClick={() => {
@@ -131,6 +174,14 @@ class CharacterCard extends Component {
                             }}>
                         Cancel
                         </Button>
+                        {this.state.player.isGameMaster && (
+                            <Button variant="danger" onClick={() => {
+                                this.handleDeleteCharacter()
+                                this.setState({editMode: false})
+                                }}>
+                                    Delete
+                            </Button>
+                        )}
                     </div>
                     )}
                     {!this.state.editMode && (
@@ -140,7 +191,7 @@ class CharacterCard extends Component {
                         </Button>
                     </div>
                     )}                    
-                </Card.Body>
+                </Card.Footer>
             </Card>
         )
     }
