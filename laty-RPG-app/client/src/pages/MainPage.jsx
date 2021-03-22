@@ -14,6 +14,7 @@ class MainPage extends Component {
             isLoading: false,
             creatingPlayer : false,
             editingPlayer : false,
+            requestedGMLogin : null,
             newPlayerName : "",
             newPlayerDiscordWebhook : "",
         }
@@ -81,6 +82,17 @@ class MainPage extends Component {
         })
     }
 
+    handlePlayerSelection = (selectedOption) => {
+        this.componentDidMount()
+        var selectedPlayer = this.state.allPlayers.find(player => player._id === selectedOption.value)
+        if(!selectedPlayer.isGameMaster){
+            this.setState({playerLoggedIn : selectedPlayer })
+        }
+        else{
+            this.setState({requestedGMLogin : selectedPlayer})
+        }
+    }
+
     renderPlayerCreationModal = () => {
         return (
             <Modal show={this.state.creatingPlayer} onHide={() => {this.setState({creatingPlayer : false})}} centered >
@@ -141,6 +153,38 @@ class MainPage extends Component {
         )
     }
 
+    checkIfPasswordCorrect = async () => {
+        if(this.state.passwordEntered === "boujourRyzumFaipachier"){
+            this.setState({playerLoggedIn : this.state.requestedGMLogin , requestedGMLogin : null})
+        }
+    }
+
+    renderGMPasswordModal = () => {
+        return (
+            <Modal show={this.state.requestedGMLogin != null} onHide={() => {this.setState({requestedGMLogin : null})}} centered >
+                    <Modal.Header closeButton>
+                    <Modal.Title>Enter GM password</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="gmPasswordInput">
+                                {/* <Form.Label>Player Name</Form.Label> */}
+                                <Form.Control type = "password" onChange = {(event) => {this.setState({passwordEntered : event.target.value})}} />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={() => this.setState({requestedGMLogin : null})}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={this.checkIfPasswordCorrect}>
+                        Enter
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+        )
+    }
+
     render() {
         
         var associatedCharacters = this.state.playerLoggedIn && (this.state.playerLoggedIn.isGameMaster? 
@@ -153,6 +197,7 @@ class MainPage extends Component {
 
         return(
             <div className = "container" style = {{height:"100vh"}}>
+                {this.state.requestedGMLogin && this.renderGMPasswordModal()}
                 {!this.state.playerLoggedIn && this.renderPlayerCreationModal()}
                 {this.state.playerLoggedIn && this.renderPlayerEditingModal()}
                 <Row className = "justify-content-md-end">
@@ -184,8 +229,7 @@ class MainPage extends Component {
                         {label : "Gamemasters", options :this.state.allPlayers.filter(player => player.isGameMaster).map(player => {return {value : player._id, label : player.name}}) }]}
                         isLoading = {this.state.isLoading}
                         placeholder = "Select a player"
-                        onChange = {(selectedOption) => {this.componentDidMount()
-                            this.setState({playerLoggedIn : this.state.allPlayers.find(player => player._id === selectedOption.value)})}}
+                        onChange = {this.handlePlayerSelection}
                     />
                     )}
                     {!this.state.playerLoggedIn && (
