@@ -27,6 +27,7 @@ class CharacterCard extends Component {
             player : this.props.player,
             players : [],
             editMode : false,
+            authToken : this.props.authToken,
         }
     }
 
@@ -82,9 +83,16 @@ class CharacterCard extends Component {
 
     handleUpdateCharacter = async () => {
         // console.log(this.state.character)
-        await api.updateCharacterById(this.state.character._id, this.state.character).then(res => {
-            // window.alert(`Character updated successfully`)
-        })
+        if(this.state.player.isGameMaster){
+            await api.updateCharacterByIdForGM(this.state.character._id, this.state.character, this.state.authToken).then(res => {
+                // window.alert(`Character updated successfully`)
+            })
+        }
+        else{
+            await api.updateCharacterByIdForPlayer(this.state.character._id, this.state.character).then(res => {
+                // window.alert(`Character updated successfully`)
+            })
+        }        
     }    
     
     handleDeleteCharacter = async () => {
@@ -93,7 +101,7 @@ class CharacterCard extends Component {
                 `Do tou want to delete the character ${this.state.character.name} permanently?`,
             )
         ) {
-            await api.deleteCharacterById(this.state.character._id).then(() => {
+            await api.deleteCharacterById(this.state.character._id, this.state.authToken).then(() => {
                 this.props.refreshCharacters()
                 // this.componentWillUnmount()
             })

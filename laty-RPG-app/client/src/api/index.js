@@ -6,37 +6,47 @@ const api = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_API_URL,
 })
 
-export const insertCharacter = payload => api.post(`/character`, payload)
-export const getAllCharacters = () => api.get(`/characters`)
-export const updateCharacterById = (id, payload) => api.put(`/character/${id}`, payload)
-export const deleteCharacterById = id => api.delete(`/character/${id}`)
+//No need for auth
 export const getCharacterById = id => api.get(`/character/${id}`)
+export const getAllPlayerCharacters = (player_id) => api.get(`/player-characters/${player_id}`)
+export const updateCharacterByIdForPlayer = (id, payload) => api.put(`/gm-character/${id}`, payload)
 
+//Need auth
+export const insertCharacter = (payload, token) => api.post(`/character`, payload, {headers : {'Authorization' : token}})
+export const getAllCharacters = (token) => api.get(`/characters`,  {headers : {'Authorization' : token}})
+export const deleteCharacterById = (id, token) => api.delete(`/character/${id}`,  {headers : {'Authorization' : token}})
+export const updateCharacterByIdForGM = (id, payload, token) => api.put(`/gm-character/${id}`, payload, {headers : {'Authorization' : token}})
+
+//Acquire auth
 export const gmLogin = payload => api.post(`/gmLogin`, payload)
+
+//Acount creation/editing
 export const createPlayer = payload => api.post(`/player`, payload)
 export const getAllPlayers = () => api.get(`/players`)
 export const updatePlayerById = (id, payload) => api.put(`/player/${id}`, payload)
 export const deletePlayerById = id => api.delete(`/player/${id}`)
 export const getPlayerById = id => api.get(`/player/${id}`)
-export const addCharacterToPlayer = (id, character_id) => api.get(`/player/${id}/add_character/${character_id}`)
-export const removeCharacterFromPlayer =  (id, character_id) => api.get(`/player/${id}/remove_character/${character_id}`)
 
 export const sendDiscordMessage = payload => api.post(`/discord`, payload)
 
 const apis = {
-    gmLogin,
+    getCharacterById,
+    getAllPlayerCharacters,
+    updateCharacterByIdForPlayer,
+
     insertCharacter,
     getAllCharacters,
-    updateCharacterById,
     deleteCharacterById,
-    getCharacterById,
+    updateCharacterByIdForGM,
+
+    gmLogin,
+
     createPlayer,
     getAllPlayers,
     updatePlayerById,
     deletePlayerById,
     getPlayerById,
-    addCharacterToPlayer,
-    removeCharacterFromPlayer,
+
     sendDiscordMessage,
 }
 

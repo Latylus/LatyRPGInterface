@@ -6,6 +6,7 @@ const dotenv = require('dotenv')
 sendDiscordMessage = async (req, res) => {
     dotenv.config()
     const body = req.body
+    body.webhook = body.webhook ?? process.env.PUBLIC_CHANNEL_WEBHOOK
       
     axios.post(body.webhook, body.message, {
         headers : {

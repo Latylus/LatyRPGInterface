@@ -9,7 +9,7 @@ class MainPage extends Component {
         super(props)
         this.state = {
             playerLoggedIn: null,
-            allCharacters : [],
+            charactersToDisplay : [],
             allPlayers : [],
             isLoading: false,
             creatingPlayer : false,
@@ -17,6 +17,7 @@ class MainPage extends Component {
             requestedGMLogin : null,
             newPlayerName : "",
             newPlayerDiscordWebhook : "",
+            authToken : "",
         }
     }
 
@@ -31,14 +32,27 @@ class MainPage extends Component {
                 })
             }
         })
-
-        await api.getAllCharacters().then(characters => {
-            if(characters.data.data){
-                this.setState({
-                    allCharacters: characters.data.data,
+        if(this.state.playerLoggedIn){
+            if(this.state.playerLoggedIn.isGameMaster){
+                await api.getAllCharacters(this.state.authToken).then(characters => {
+                    if(characters.data.data){
+                        this.setState({
+                            charactersToDisplay: characters.data.data,
+                        })
+                    }
                 })
             }
-        })
+            else{
+                await api.getAllPlayerCharacters(this.state.playerLoggedIn._id).then(characters => {
+                    if(characters.data.data){
+                        this.setState({
+                            charactersToDisplay : characters.data.data
+                        })
+                    }
+                })
+            }
+        }
+        
     }
 
     handleCreateDefaultCharacter = async () => {
@@ -47,7 +61,7 @@ class MainPage extends Component {
             strength: 0,
         }
 
-        await api.insertCharacter(payload).then(res => {
+        await api.insertCharacter(payload, this.state.authToken).then(res => {
             console.log('sent create char')
             this.componentDidMount()
         })
@@ -155,11 +169,10 @@ class MainPage extends Component {
 
     checkIfPasswordCorrect = async () => {
 
-        await api.gmLogin({password : this.state.passwordEntered}).then(res => {
+        await api.gmLogin({password : this.state.passwordEntered, playerId : this.state.requestedGMLogin._id}).then(res => {
             if (res.data.success){
-                this.setState({playerLoggedIn : this.state.requestedGMLogin , requestedGMLogin : null})
-            }
-            else{
+                this.setState({playerLoggedIn : this.state.requestedGMLogin , requestedGMLogin : null, authToken : res.data.token})
+                this.componentDidMount()
             }
         }).catch(error => {
             if(error.response.status === 403){
@@ -200,9 +213,8 @@ class MainPage extends Component {
 
     render() {
         
-        var associatedCharacters = this.state.playerLoggedIn && (this.state.playerLoggedIn.isGameMaster? 
-            this.state.allCharacters : 
-            this.state.allCharacters.filter(char => char.associatedPlayer === this.state.playerLoggedIn._id))
+        var associatedCharacters = this.state.playerLoggedIn && 
+            this.state.charactersToDisplay  
          // const { characters, isLoading } = this.state
         this.childRefs = associatedCharacters && Object.fromEntries(associatedCharacters.map(char => [char._id, React.createRef()]));
         // console.log('TCL: CharactersList -> render -> characters', characters)
@@ -232,7 +244,7 @@ class MainPage extends Component {
                         <Button className = "mt-4"
                         variant="dark" 
                         size = "sm"
-                        onClick = {() => this.setState({playerLoggedIn : null})}>Log Out</Button>
+                        onClick = {() => this.setState({playerLoggedIn : null, charactersToDisplay : [], authToken : "", passwordEntered : ""})}>Log Out</Button>
                     )}
                 </Row>
                 <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
@@ -258,7 +270,8 @@ class MainPage extends Component {
                         character = {char}
                         discordWebhook = {this.state.playerLoggedIn.discordWebhook}
                         player = {this.state.playerLoggedIn}
-                        refreshCharacters = {this.componentDidMount}/>)
+                        refreshCharacters = {this.componentDidMount}
+                        authToken = {this.state.authToken}/>)
                     }
                     </CardDeck>                
                 </Row>

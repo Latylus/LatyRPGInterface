@@ -1,14 +1,18 @@
 const Character = require('../models/character-model')
 const Player = require('../models/player-model')
 const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken');
 dotenv.config()
 
 gmLogin = async(req,res) =>{
     const enteredPassword = req.body.password
+    const playerId = req.body.playerId
 
     if( enteredPassword === process.env.GM_PASSWORD){
+        const token = jwt.sign({_id : playerId}, process.env.PRIVATE_JWK_KEY)
         return res.status(200).json({
-            success : true
+            success : true,
+            token : token
         })
     }
     else{
