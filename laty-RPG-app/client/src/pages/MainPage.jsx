@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
-import {Button, CardDeck, Row, Modal, Form, ButtonGroup, ToggleButton} from 'react-bootstrap'
+import {Button, Row, Modal, Form, ButtonGroup, ToggleButton} from 'react-bootstrap'
 import api from '../api'
-import CharacterCard from './CharacterCard'
+import CharacterDeck from './CharacterDeck'
 
 class MainPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
             playerLoggedIn: null,
-            charactersToDisplay : [],
             allPlayers : [],
             isLoading: false,
             creatingPlayer : false,
@@ -33,27 +32,6 @@ class MainPage extends Component {
                 })
             }
         })
-        if(this.state.playerLoggedIn){
-            if(this.state.playerLoggedIn.isGameMaster){
-                await api.getAllCharacters(this.state.authToken).then(characters => {
-                    if(characters.data.data){
-                        this.setState({
-                            charactersToDisplay: characters.data.data,
-                        })
-                    }
-                })
-            }
-            else{
-                await api.getAllPlayerCharacters(this.state.playerLoggedIn._id).then(characters => {
-                    if(characters.data.data){
-                        this.setState({
-                            charactersToDisplay : characters.data.data
-                        })
-                    }
-                })
-            }
-        }
-        
     }
 
     handleCreateDefaultCharacter = async () => {
@@ -64,7 +42,10 @@ class MainPage extends Component {
 
         await api.insertCharacter(payload, this.state.authToken).then(res => {
             console.log('sent create char')
+            this.childRef.current.handleRefresh()
             this.componentDidMount()
+        }, res => {
+            console.log("failed character creation")
         })
     }
 
@@ -73,10 +54,7 @@ class MainPage extends Component {
         const id = this.state.playerLoggedIn._id
         await api.updatePlayerById(id,payload).then(async res => {
             this.setState({editingPlayer : false})
-            Object.entries(this.childRefs).map(([k,v]) => v).forEach(ref => {
-                ref.current.state.player = this.state.playerLoggedIn 
-                ref.current.state.discordWebhook = this.state.playerLoggedIn.discordWebhook
-            } )
+            this.childRef.current.handlePlayerEdit(this.state.playerLoggedIn)
             await this.componentDidMount()
         })
     }
@@ -222,12 +200,9 @@ class MainPage extends Component {
 
     render() {
         
-        var associatedCharacters = this.state.playerLoggedIn && 
-            this.state.charactersToDisplay  
          // const { characters, isLoading } = this.state
-        this.childRefs = associatedCharacters && Object.fromEntries(associatedCharacters.map(char => [char._id, React.createRef()]));
         // console.log('TCL: CharactersList -> render -> characters', characters)
-
+        this.childRef = React.createRef()
 
         return(
             <div className = "container" style = {{height:"100vh"}}>
@@ -239,9 +214,7 @@ class MainPage extends Component {
                         <Button className = "mt-4"
                         variant="primary" 
                         size = "sm"
-                        onClick = {() => {this.componentDidMount(); Object.entries(this.childRefs).map(([k,v]) => v).forEach(ref => {
-                            ref.current.componentDidMount()
-                        });}}>Refresh</Button>
+                        onClick = {() => {this.componentDidMount(); this.childRef.current.handleRefresh();}}>Refresh</Button>
                     )}                    
                     {this.state.playerLoggedIn && (
                         <Button className = "mt-4"
@@ -269,23 +242,16 @@ class MainPage extends Component {
                     {!this.state.playerLoggedIn && (
                         <Button className = "mt-4 col-md-3"
                         variant = "secondary"
-                        onClick = {(event) => this.setState({creatingPlayer : true})}>Create New Player</Button>
+                        onClick = {() => this.setState({creatingPlayer : true})}>Create New Player</Button>
                     )}
-                    <CardDeck className = "d-flex flex-nowrap">
-                        
-                    {associatedCharacters && associatedCharacters.map(char =>
-                        <CharacterCard ref={this.childRefs[char._id]}
-                        key={char._id} 
-                        character = {char}
-                        discordSendFunction = {this.handleDiscordMessaging}
-                        player = {this.state.playerLoggedIn}
-                        refreshCharacters = {this.componentDidMount}
-                        authToken = {this.state.authToken}/>)
-                    }
-                    </CardDeck>                
+
+                    {this.state.playerLoggedIn && (<CharacterDeck ref={this.childRef}
+                    discordSendFunction = {this.handleDiscordMessaging}
+                    player = {this.state.playerLoggedIn}
+                    authToken = {this.state.authToken}/>)}
                 </Row>
                 <Row>
-                    <div class = "col-auto mr-auto">
+                    <div className = "col-auto mr-auto">
                         {this.state.playerLoggedIn && (
                             <ButtonGroup toggle className = "mt-4">
                                 <ToggleButton
@@ -313,7 +279,7 @@ class MainPage extends Component {
                             </ButtonGroup>
                         )}
                     </div>
-                    <div class = "col-auto">
+                    <div className = "col-auto">
                         {this.state.playerLoggedIn && this.state.playerLoggedIn.isGameMaster &&(
                             <Button className = "mt-4"
                             variant="primary" 

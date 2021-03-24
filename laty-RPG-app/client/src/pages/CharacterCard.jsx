@@ -32,16 +32,16 @@ class CharacterCard extends Component {
     }
 
     componentDidMount = async () => {
-        this.setState({ isLoading: true })
-
-        await api.getCharacterById(this.state.character._id).then(character => {
-            // console.log('requested API')
-            if(character.data.data){
-                this.setState({
-                    character: character.data.data,
-                })
-            }
-        })
+        if(this.state.character){
+            await api.getCharacterById(this.state.character._id).then(character => {
+                // console.log('requested API')
+                if(character.data.data){
+                    this.setState({
+                        character: character.data.data,
+                    })
+                }
+            })
+        }
 
         
         await api.getAllPlayers().then(players => {
@@ -92,6 +92,7 @@ class CharacterCard extends Component {
                 `Do tou want to delete the character ${this.state.character.name} permanently?`,
             )
         ) {
+            this.setState({character : null}) // prevents any call to apis while component is being deleted
             await api.deleteCharacterById(this.state.character._id, this.state.authToken).then(() => {
                 this.props.refreshCharacters()
                 // this.componentWillUnmount()
@@ -176,7 +177,6 @@ class CharacterCard extends Component {
                         {this.state.player.isGameMaster && (
                             <Button variant="danger" onClick={() => {
                                 this.handleDeleteCharacter()
-                                this.setState({editMode: false})
                                 }}>
                                     Delete
                             </Button>

@@ -79,13 +79,12 @@ deleteCharacter = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
-
-        if (!character) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Character not found` })
-        }
-        console.log('Deleted character')
+        // had to remove this because SOMETIMES it would say there was no character which was deleted even though it was
+        // if (!character) {
+        //     return res
+        //         .status(404)
+        //         .json({ success: false, error: `Character not found` })
+        // }
         return res.status(200).json({ success: true, data: character })
       
     }).catch(err => console.log(err))
