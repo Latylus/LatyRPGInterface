@@ -23,7 +23,7 @@ class CharacterCard extends Component {
         super(props)
         this.state = {
             character: this.props.character,
-            discordWebhook : this.props.discordWebhook,
+            discordSendFunction : this.props.discordSendFunction,
             player : this.props.player,
             players : [],
             editMode : false,
@@ -56,16 +56,7 @@ class CharacterCard extends Component {
     }
 
     sendDiscordMessage = async (discordMessage) =>{
-        const payload = { 
-            webhook : this.state.discordWebhook,
-            message : discordMessage
-        }
-        if(this.state.discordWebhook){
-            await api.sendDiscordMessage(payload).then(res => {})
-        }
-        else{
-            window.alert(`You haven't setup your discord webhook correctly`)
-        }
+        await this.state.discordSendFunction(discordMessage)
     }
 
     handleStrengthClick = async () => {

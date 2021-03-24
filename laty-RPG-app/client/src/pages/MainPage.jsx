@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
-import {Button, CardDeck, Row, Modal, Form} from 'react-bootstrap'
+import {Button, CardDeck, Row, Modal, Form, ButtonGroup, ToggleButton} from 'react-bootstrap'
 import api from '../api'
 import CharacterCard from './CharacterCard'
 
@@ -17,6 +17,7 @@ class MainPage extends Component {
             requestedGMLogin : null,
             newPlayerName : "",
             newPlayerDiscordWebhook : "",
+            usePublicDiscordChannel : false,
             authToken : "",
         }
     }
@@ -105,6 +106,14 @@ class MainPage extends Component {
         else{
             this.setState({requestedGMLogin : selectedPlayer})
         }
+    }
+
+    handleDiscordMessaging = async (discordMessage) => {
+        const payload = { 
+            webhook : this.state.usePublicDiscordChannel ? undefined : this.state.playerLoggedIn.discordWebhook,
+            message : discordMessage
+        }
+        await api.sendDiscordMessage(payload).then(res => {})
     }
 
     renderPlayerCreationModal = () => {
@@ -244,7 +253,7 @@ class MainPage extends Component {
                         <Button className = "mt-4"
                         variant="dark" 
                         size = "sm"
-                        onClick = {() => this.setState({playerLoggedIn : null, charactersToDisplay : [], authToken : "", passwordEntered : ""})}>Log Out</Button>
+                        onClick = {() => this.setState({playerLoggedIn : null, charactersToDisplay : [], authToken : "", passwordEntered : "", usePublicDiscordChannel : false})}>Log Out</Button>
                     )}
                 </Row>
                 <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
@@ -268,19 +277,49 @@ class MainPage extends Component {
                         <CharacterCard ref={this.childRefs[char._id]}
                         key={char._id} 
                         character = {char}
-                        discordWebhook = {this.state.playerLoggedIn.discordWebhook}
+                        discordSendFunction = {this.handleDiscordMessaging}
                         player = {this.state.playerLoggedIn}
                         refreshCharacters = {this.componentDidMount}
                         authToken = {this.state.authToken}/>)
                     }
                     </CardDeck>                
                 </Row>
-                <Row className = "justify-content-md-end">
-                    {this.state.playerLoggedIn && this.state.playerLoggedIn.isGameMaster &&(
-                        <Button className = "mt-4"
-                        variant="primary" 
-                        onClick = {this.handleCreateDefaultCharacter} >Create New Character</Button>
-                    )}
+                <Row>
+                    <div class = "col-auto mr-auto">
+                        {this.state.playerLoggedIn && (
+                            <ButtonGroup toggle className = "mt-4">
+                                <ToggleButton
+                                    key={1}
+                                    type="radio"
+                                    variant="secondary"
+                                    name="radio"
+                                    // value={radio.value}
+                                    checked={!this.state.usePublicDiscordChannel}
+                                    onChange={(e) => this.setState({usePublicDiscordChannel : false})}
+                                >
+                                    Private Rolls
+                                </ToggleButton>
+                                <ToggleButton
+                                    key={2}
+                                    type="radio"
+                                    variant="secondary"
+                                    name="radio"
+                                    // value={radio.value}
+                                    checked={this.state.usePublicDiscordChannel}
+                                    onChange={(e) => this.setState({usePublicDiscordChannel : true})}
+                                >
+                                    Public Rolls
+                                </ToggleButton>
+                            </ButtonGroup>
+                        )}
+                    </div>
+                    <div class = "col-auto">
+                        {this.state.playerLoggedIn && this.state.playerLoggedIn.isGameMaster &&(
+                            <Button className = "mt-4"
+                            variant="primary" 
+                            onClick = {this.handleCreateDefaultCharacter} >Create New Character</Button>
+                        )}
+                    </div>
                 </Row>
             </div>)        
     }
