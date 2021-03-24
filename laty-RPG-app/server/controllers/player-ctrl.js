@@ -1,5 +1,24 @@
 const Character = require('../models/character-model')
 const Player = require('../models/player-model')
+const dotenv = require('dotenv')
+dotenv.config()
+
+gmLogin = async(req,res) =>{
+    const enteredPassword = req.body.password
+
+    if( enteredPassword === process.env.GM_PASSWORD){
+        return res.status(200).json({
+            success : true
+        })
+    }
+    else{
+        return res.status(403).json({
+            success : false,
+            error : 'Wrong password'
+        })
+    }
+}
+
 
 createPlayer = async (req, res) => {
     const body = req.body
@@ -14,7 +33,7 @@ createPlayer = async (req, res) => {
     const player = new Player(body)
 
     if (!player) {
-        return res.status(400).json({ success: false, error: err })
+        return res.status(400).json({ success: false, error: "Couldn't create player from data" })
     }
 
     player
@@ -106,7 +125,6 @@ getPlayerById = async (req, res) => {
 }
 
 getPlayers = async (req, res) => {
-   
     await Player.find({}, (err, players) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -122,6 +140,7 @@ getPlayers = async (req, res) => {
 
 
 module.exports = {
+    gmLogin,
     createPlayer,
     updatePlayer,
     deletePlayer,

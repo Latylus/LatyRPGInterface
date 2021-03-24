@@ -12,6 +12,7 @@ export const updateCharacterById = (id, payload) => api.put(`/character/${id}`, 
 export const deleteCharacterById = id => api.delete(`/character/${id}`)
 export const getCharacterById = id => api.get(`/character/${id}`)
 
+export const gmLogin = payload => api.post(`/gmLogin`, payload)
 export const createPlayer = payload => api.post(`/player`, payload)
 export const getAllPlayers = () => api.get(`/players`)
 export const updatePlayerById = (id, payload) => api.put(`/player/${id}`, payload)
@@ -23,6 +24,7 @@ export const removeCharacterFromPlayer =  (id, character_id) => api.get(`/player
 export const sendDiscordMessage = payload => api.post(`/discord`, payload)
 
 const apis = {
+    gmLogin,
     insertCharacter,
     getAllCharacters,
     updateCharacterById,

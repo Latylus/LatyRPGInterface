@@ -154,9 +154,22 @@ class MainPage extends Component {
     }
 
     checkIfPasswordCorrect = async () => {
-        if(this.state.passwordEntered === "boujourRyzumFaipachier"){
-            this.setState({playerLoggedIn : this.state.requestedGMLogin , requestedGMLogin : null})
-        }
+
+        await api.gmLogin({password : this.state.passwordEntered}).then(res => {
+            if (res.data.success){
+                this.setState({playerLoggedIn : this.state.requestedGMLogin , requestedGMLogin : null})
+            }
+            else{
+            }
+        }).catch(error => {
+            if(error.response.status === 403){
+                window.alert(`Wrong password`)
+            }
+            else{
+                console.log(error.response.status)
+                throw error
+            }
+        })
     }
 
     renderGMPasswordModal = () => {

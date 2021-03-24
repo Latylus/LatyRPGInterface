@@ -9,5 +9,6 @@ router.put('/player/:id', PlayerCtrl.updatePlayer)
 router.delete('/player/:id', PlayerCtrl.deletePlayer)
 router.get('/player/:id', PlayerCtrl.getPlayerById)
 router.get('/players', PlayerCtrl.getPlayers)
+router.post('/gmLogin', PlayerCtrl.gmLogin)
 
 module.exports = router
