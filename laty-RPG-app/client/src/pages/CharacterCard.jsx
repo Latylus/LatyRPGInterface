@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner, Row, Form, Col} from 'react-bootstrap'
+import {Button, Card, Spinner, Row, Form, Col, Badge} from 'react-bootstrap'
 import Select from 'react-select'
 import api from '../api'
 
@@ -111,7 +111,7 @@ class CharacterCard extends Component {
     }
 
     handleUpdateCharacter = async () => {
-         console.log("updating character")
+        console.log("updating character")
         if(this.state.player.isGameMaster){
             await api.updateCharacterByIdForGM(this.state.character._id, this.state.character, this.state.authToken).then(res => {
                 // window.alert(`Character updated successfully`)
@@ -164,6 +164,7 @@ class CharacterCard extends Component {
                         <Col xs= {3}>
 
                         <Form.Control type = 'number' step = '1' min = '0' max = '30' style={{width : '60px'}}
+                        disabled = {!this.state.player.isGameMaster && statPhase !== this.state.character.phase}
                         value = {this.state.character[statName]}
                         onBlur= {() => this.handleUpdateCharacter()}
                         onChange = {(event) => {this.setState(state => ((state.character[statName] = event.target.value, state)))}}/>
@@ -176,14 +177,14 @@ class CharacterCard extends Component {
         return (
                 baseStats.map((phaseStats, phase) =>{
                     return (
-                        this.state.character.phase >= phase && (
+                        (this.state.character.phase >= phase || this.state.player.isGameMaster) && (
                             <div key = {phase}>
                             <Card.Subtitle className ="row justify-content-center">{phaseNames[phase]}</Card.Subtitle>
                             <hr style={{width:'50%', height :'0px', border : 0}}/>
                             <Form inline className = "row justify-content-center" >
                                 {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase))}
                             </Form>
-                            <hr style={{'background-image':`url(./logo192.png)`}}/>
+                            <hr style={{'backgroundImage':`url(./logo192.png)`}}/>
                             </div>
                         )
                     )
@@ -223,16 +224,58 @@ class CharacterCard extends Component {
 
                 <Card.Body>
                     {this.renderStatBlock()}
+                    
+                    <Form inline className = "row justify-content-center" >
+                        <Form.Group  controlId = 'willpower' className = "col-4">
+                            <Form.Label>Volonté</Form.Label>
+                            <Col xs= {3}>
+
+                            <Form.Control type = 'number' step = '5' min = '-10' max = '30' style={{width : '60px'}}
+                            value = {this.state.character.willpower}
+                            onBlur= {() => this.handleUpdateCharacter()}
+                            onChange = {(event) => {this.setState(state => ((state.character.willpower = event.target.value, state)))}}/>
+                            </Col>
+                        </Form.Group>
+                        {!this.state.player.isGameMaster &&(
+                        <Row>
+                            <Label>Morts {this.state.character.deaths}/4</Label>
+                            {/* <Badge pill variant = "dark"> </Badge>{' '}
+                            <Badge pill variant = "secondary"> </Badge>{' '}
+                            <Badge pill variant = "dark"> </Badge>{' '} */}
+                        </Row>
+                        )}
+                        {this.state.player.isGameMaster &&(
+                            <Form.Group  controlId = 'deaths' className = "col-4">
+                                <Form.Label>Morts</Form.Label>
+                                <Col xs= {3}>
+
+                                <Form.Control type = 'number' step = '1' min = '0' max = '4' style={{width : '60px'}}
+                                value = {this.state.character.deaths}
+                                onBlur= {() => this.handleUpdateCharacter()}
+                                onChange = {(event) => {this.setState(state => ((state.character.deaths = event.target.value, state)))}}/>
+                                </Col>
+                            </Form.Group>
+                        )
+                            
+                        }
+                    </Form>
+                                           
                     {this.state.editMode && this.state.player.isGameMaster && (
-                                <Row className = "mt-4">
-                                    <Label>Player</Label>
-                                    <Select className = "col-md-4"
-                                    options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
-                                    value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
-                                    isLoading = {this.state.isLoading}
-                                    onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
-                                </Row>
-                            )
+                        <Row>
+                            <Label>Player</Label>
+                            <Select className = "col-md-4"
+                            options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
+                            value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
+                            isLoading = {this.state.isLoading}
+                            onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
+                            <Label>Phase</Label>
+                            <Select className = "col-md-4"
+                            options = {phaseNames.map((label, value)=> {return {label: label, value : value}})}
+                            value = {{value : this.state.character.phase, label : phaseNames[this.state.character.phase]}}
+                            isLoading = {this.state.isLoading}
+                            onChange = {(selectedOption) =>  {this.setState(state => ((state.character.phase = selectedOption.value, state)))}}/>
+                        </Row>
+                    )
                     }
                 </Card.Body>
                 <Card.Footer>

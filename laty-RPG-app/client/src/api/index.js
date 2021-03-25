@@ -9,7 +9,7 @@ const api = axios.create({
 //No need for auth
 export const getCharacterById = id => api.get(`/character/${id}`)
 export const getAllPlayerCharacters = (player_id) => api.get(`/player-characters/${player_id}`)
-export const updateCharacterByIdForPlayer = (id, payload) => api.put(`/gm-character/${id}`, payload)
+export const updateCharacterByIdForPlayer = (id, payload) => api.put(`/character/${id}`, payload)
 
 //Need auth
 export const insertCharacter = (payload, token) => api.post(`/character`, payload, {headers : {'Authorization' : token}})
