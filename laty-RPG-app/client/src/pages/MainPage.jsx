@@ -36,8 +36,24 @@ class MainPage extends Component {
 
     handleCreateDefaultCharacter = async () => {
         const payload = {
-            name: "name",
-            strength: 0,
+            name: "Name",
+            
+            deaths: 0,
+            willpower : 0,
+
+            phase : 0,
+
+            determination : 0,
+            perception :0 ,
+            nobility : 0,
+            ingenuity : 0,
+            spirituality : 0,
+            bonusValor : 0,
+            bonusScheming : 0,
+            bonusEloquence : 0,
+            bonusDiplomacy : 0,
+            bonusManipulation : 0,
+            bonusTheology : 0,
         }
 
         await api.insertCharacter(payload, this.state.authToken).then(res => {

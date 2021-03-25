@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner, Row} from 'react-bootstrap'
+import {Button, Card, Spinner, Row, Form, Col} from 'react-bootstrap'
 import Select from 'react-select'
 import api from '../api'
 
@@ -17,6 +17,44 @@ const Label = styled.label`
     margin: 5px;
     float: left;
 `
+
+const baseStats = [
+    {
+        determination : 'Determination',
+        perception : 'Perception',
+    },
+    {
+        nobility : "Noblesse",
+        ingenuity : "Ingéniosité" ,
+        spirituality : "Sipiritualité",
+    },
+    {
+        bonusValor : "Valeur",
+        bonusScheming : "Manigance",
+        bonusEloquence : "Eloquence",
+        bonusDiplomacy : "Diplomacie",
+        bonusManipulation : "Manipulation",
+        bonusTheology : "Théologie",
+    },
+]
+
+const phaseNames = [
+    "Enfance",
+    "Adolescence",
+    "Age Adulte"
+]
+
+const magicStats = [
+    {},
+    {
+        magic : "Magie",
+    },
+    {
+        bonusAracana : "Arcanes",
+        bonusSorcery : "Sorcellerie",
+    }
+]
+
 
 class CharacterCard extends Component {
     constructor(props) {
@@ -59,13 +97,13 @@ class CharacterCard extends Component {
         await this.state.discordSendFunction(discordMessage)
     }
 
-    handleStrengthClick = async () => {
+    handleAbilityClick = async (statName, statTranslation) => {
         var rollValue = Math.floor(Math.random()*20+1)
         const message = {
             // "content": body.message,
             embeds: [{
-                title: `A strength roll was requested by ${this.state.player.name}`,
-                description: `Result : ${ +rollValue + +this.state.character.strength} = ${rollValue} (1d20) + ${this.state.character.strength} (STR)`
+                title: `A ${statTranslation} roll was requested by ${this.state.player.name} for ${this.state.character.name}`,
+                description: `Result : ${ +rollValue + +this.state.character[statName]} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})`
             }]
         }        
 
@@ -73,7 +111,7 @@ class CharacterCard extends Component {
     }
 
     handleUpdateCharacter = async () => {
-        // console.log(this.state.character)
+         console.log("updating character")
         if(this.state.player.isGameMaster){
             await api.updateCharacterByIdForGM(this.state.character._id, this.state.character, this.state.authToken).then(res => {
                 // window.alert(`Character updated successfully`)
@@ -100,22 +138,56 @@ class CharacterCard extends Component {
         }
     }
 
-    editCharacterFieldInput = (field, label) => {
-        const value = this.state.character[field]
-        return(
-            <div>
-                <Label>{label}</Label>
-                <InputText
-                    type="number"
-                    step="1"
-                    lang="en-US"
-                    min="0"
-                    max="30"
-                    pattern="[0-9]+([,\.][0-9]+)?"
-                    value={value}
-                    onChange={(event) => {this.setState(state => ((state.character[field] = event.target.value, state)))}}
-                />
-            </div>
+    // editCharacterFieldInput = (field, label) => {
+    //     const value = this.state.character[field]
+    //     return(
+    //         <div>
+    //             <Label>{label}</Label>
+    //             <InputText
+    //                 type="number"
+    //                 step="1"
+    //                 lang="en-US"
+    //                 min="0"
+    //                 max="30"
+    //                 pattern="[0-9]+([,\.][0-9]+)?"
+    //                 value={value}
+    //                 onChange={(event) => {this.setState(state => ((state.character[field] = event.target.value, state)))}}
+    //             />
+    //         </div>
+    //     )
+    // }
+
+    renderOneStatBlock = (statName, statPhase) => {
+                return  (
+                    <Form.Group key= {statName} controlId = {statName} className = "col-4">
+                        <Form.Label  onClick={()=> this.handleAbilityClick(statName, baseStats[statPhase][statName])} style={{cursor:'pointer', margin : '12px'}} >{baseStats[statPhase][statName]}</Form.Label>
+                        <Col xs= {3}>
+
+                        <Form.Control type = 'number' step = '1' min = '0' max = '30' style={{width : '60px'}}
+                        value = {this.state.character[statName]}
+                        onBlur= {() => this.handleUpdateCharacter()}
+                        onChange = {(event) => {this.setState(state => ((state.character[statName] = event.target.value, state)))}}/>
+                        </Col>
+                    </Form.Group>
+                )
+    }
+
+    renderStatBlock = ()=> {
+        return (
+                baseStats.map((phaseStats, phase) =>{
+                    return (
+                        this.state.character.phase >= phase && (
+                            <div key = {phase}>
+                            <Card.Subtitle className ="row justify-content-center">{phaseNames[phase]}</Card.Subtitle>
+                            <hr style={{width:'50%', height :'0px', border : 0}}/>
+                            <Form inline className = "row justify-content-center" >
+                                {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase))}
+                            </Form>
+                            <hr style={{'background-image':`url(./logo192.png)`}}/>
+                            </div>
+                        )
+                    )
+                })
         )
     }
 
@@ -132,33 +204,37 @@ class CharacterCard extends Component {
         }
 
         return(           
-            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '40rem'}}>
+            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '40rem', "maxWidth" :'40rem'}}>
                 <Card.Header>
-                    <Card.Title>
-                        {!this.state.editMode && this.state.character.name}
-                        {this.state.editMode && (<InputText type = 'string' value= {this.state.character.name} onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/>)}
-                    </Card.Title>
+                    {!this.state.editMode && (
+                        <Card.Title>
+                            {this.state.character.name}
+                        </Card.Title>
+                    )}
+                    {this.state.editMode && (<InputText type = 'string' value= {this.state.character.name} onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/>)}
+                    
                 </Card.Header>
-                {!this.state.editMode && (
+                {/* {!this.state.editMode && (
                     <Card.Body>
                         <Card.Text onClick={()=> this.handleStrengthClick()} style={{cursor:'pointer', margin : '12px'}}>{`STR :  ${this.state.character.strength}`}</Card.Text>
                     </Card.Body>)
-                }
-                {this.state.editMode && (                    
-                    <Card.Body>
-                        {this.editCharacterFieldInput('strength', 'STR : ')}
-                        {this.state.player.isGameMaster && (
-                            <Row className = "mt-4">
-                                <Label>Player</Label>
-                                <Select className = "col-md-4"
-                                options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
-                                value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
-                                isLoading = {this.state.isLoading}
-                                onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
-                            </Row>
-                        )}
-                    </Card.Body>
-                )}
+                } */}
+                {/* {this.editCharacterFieldInput('strength', 'STR : ')} */}
+
+                <Card.Body>
+                    {this.renderStatBlock()}
+                    {this.state.editMode && this.state.player.isGameMaster && (
+                                <Row className = "mt-4">
+                                    <Label>Player</Label>
+                                    <Select className = "col-md-4"
+                                    options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
+                                    value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
+                                    isLoading = {this.state.isLoading}
+                                    onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
+                                </Row>
+                            )
+                    }
+                </Card.Body>
                 <Card.Footer>
                     {this.state.editMode && (
                         <div className="ui two buttons">

@@ -53,9 +53,32 @@ updateCharacter = async (req, res) => {
             })
         }
         character.name = body.name
-        character.time = body.time
-        character.strength = body.strength
+        character.title = body.title
+
+        character.deaths = body.deaths
+        character.willpower = body.willpower
+
+        character.phase = body.phase
+
+        character.determination = body.determination
+        character.perception = body.perception
+        
+        character.nobility = body.nobility
+        character.ingenuity = body.ingenuity
+        character.spirituality = body.spirituality
+        character.magic = body.magic
+
+        character.bonusValor = body.bonusValor
+        character.bonusScheming = body.bonusScheming
+        character.bonusEloquence = body.bonusEloquence
+        character.bonusDiplomacy = body.bonusDiplomacy
+        character.bonusManipulation = body.bonusManipulation
+        character.bonusTheology = body.bonusTheology
+        character.bonusArcana = body.bonusArcana
+        character.bonusSorcery = body.bonusSorcery
+
         character.associatedPlayer = body.associatedPlayer
+        
         character
             .save()
             .then(() => {
@@ -135,8 +158,39 @@ updateCharacterPartial = async (req, res) => {
             })
         }
         character.name = body.name
-        character.time = body.time
-        character.strength = body.strength
+        character.title = body.title
+
+        character.willpower = body.willpower
+
+        switch (character.phase) {
+            case 0:
+                character.determination = body.determination
+                character.perception = body.perception
+                break;
+
+            case 1:
+                character.nobility = body.nobility
+                character.ingenuity = body.ingenuity
+                character.spirituality = body.spirituality
+                character.magic = body.magic
+                break;
+
+            case 2:
+                character.bonusValor = body.bonusValor
+                character.bonusScheming = body.bonusScheming
+                character.bonusEloquence = body.bonusEloquence
+                character.bonusDiplomacy = body.bonusDiplomacy
+                character.bonusManipulation = body.bonusManipulation
+                character.bonusTheology = body.bonusTheology
+                character.bonusArcana = body.bonusArcana
+                character.bonusSorcery = body.bonusSorcery
+                break;
+        
+            default:
+                break;
+        }
+
+
         character
             .save()
             .then(() => {
