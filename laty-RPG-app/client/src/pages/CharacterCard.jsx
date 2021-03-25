@@ -335,7 +335,7 @@ class CharacterCard extends Component {
                             <Form.Label>Volonté</Form.Label>
                             <Col xs= {3}>
 
-                            <Form.Control type = 'number' step = '5' min = '-10' max = '30' style={{width : '60px'}}
+                            <Form.Control type = 'number' step = '5' min = '-10' max = '30' style={{width : '80px'}}
                             value = {this.state.character.willpower}
                             onBlur= {() => this.handleUpdateCharacter()}
                             onChange = {(event) => {this.setState(state => ((state.character.willpower = event.target.value, state)))}}/>
