@@ -59,7 +59,8 @@ updateCharacter = async (req, res) => {
         character.willpower = body.willpower
 
         character.phase = body.phase
-
+        character.isMage = body.isMage
+        
         character.determination = body.determination
         character.perception = body.perception
         
@@ -78,7 +79,7 @@ updateCharacter = async (req, res) => {
         character.bonusSorcery = body.bonusSorcery
 
         character.associatedPlayer = body.associatedPlayer
-        
+
         character
             .save()
             .then(() => {

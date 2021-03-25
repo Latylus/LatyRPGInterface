@@ -42,6 +42,7 @@ class MainPage extends Component {
             willpower : 0,
 
             phase : 0,
+            isMage : false,
 
             determination : 0,
             perception :0 ,

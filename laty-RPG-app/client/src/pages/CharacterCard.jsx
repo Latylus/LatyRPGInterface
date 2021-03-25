@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner, Row, Form, Col, Badge} from 'react-bootstrap'
+import {Button, Card, Spinner, Row, Form, Col, ButtonGroup, ToggleButton} from 'react-bootstrap'
 import Select from 'react-select'
 import api from '../api'
 
@@ -157,10 +157,10 @@ class CharacterCard extends Component {
     //     )
     // }
 
-    renderOneStatBlock = (statName, statPhase) => {
+    renderOneStatBlock = (statName, statPhase, statTranslation) => {
                 return  (
                     <Form.Group key= {statName} controlId = {statName} className = "col-4">
-                        <Form.Label  onClick={()=> this.handleAbilityClick(statName, baseStats[statPhase][statName])} style={{cursor:'pointer', margin : '12px'}} >{baseStats[statPhase][statName]}</Form.Label>
+                        <Form.Label  onClick={()=> this.handleAbilityClick(statName, statTranslation)} style={{cursor:'pointer', margin : '12px'}} >{statTranslation}</Form.Label>
                         <Col xs= {3}>
 
                         <Form.Control type = 'number' step = '1' min = '0' max = '30' style={{width : '60px'}}
@@ -182,7 +182,10 @@ class CharacterCard extends Component {
                             <Card.Subtitle className ="row justify-content-center">{phaseNames[phase]}</Card.Subtitle>
                             <hr style={{width:'50%', height :'0px', border : 0}}/>
                             <Form inline className = "row justify-content-center" >
-                                {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase))}
+                                {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase, baseStats[phase][stat]))}
+                                {this.state.character.isMage && 
+                                    Object.keys(magicStats[phase]).map(stat => this.renderOneStatBlock(stat, phase, magicStats[phase][stat]))
+                                }
                             </Form>
                             <hr style={{'backgroundImage':`url(./logo192.png)`}}/>
                             </div>
@@ -261,22 +264,47 @@ class CharacterCard extends Component {
                     </Form>
                                            
                     {this.state.editMode && this.state.player.isGameMaster && (
-                        <Row>
-                            <Label>Player</Label>
-                            <Select className = "col-md-4"
-                            options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
-                            value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
-                            isLoading = {this.state.isLoading}
-                            onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
+                        <Row className = "justify-content-center align-items-center">
+                            <ButtonGroup toggle>
+                                <ToggleButton
+                                    key={1}
+                                    type="checkbox"
+                                    variant="primary"
+                                    name="radio"
+                                    checked={this.state.character.isMage}
+                                    onChange={(e) => {this.setState(state => ((state.character.isMage = !state.character.isMage)))}}
+                                >
+                                    Mage
+                                </ToggleButton>
+                            </ButtonGroup>
+                            
                             <Label>Phase</Label>
                             <Select className = "col-md-4"
                             options = {phaseNames.map((label, value)=> {return {label: label, value : value}})}
                             value = {{value : this.state.character.phase, label : phaseNames[this.state.character.phase]}}
                             isLoading = {this.state.isLoading}
                             onChange = {(selectedOption) =>  {this.setState(state => ((state.character.phase = selectedOption.value, state)))}}/>
+                        
+                            <Label>Player</Label>
+                            <Select className = "col-md-4"
+                            options = {[{value : undefined, label : ''}].concat(this.state.players.filter(player=> !player.isGameMaster).map(player => {return {value : player._id, label : player.name}}))}
+                            value = {{value : this.state.character.associatedPlayer, label : this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}}
+                            isLoading = {this.state.isLoading}
+                            onChange = {(selectedOption) =>  {this.setState(state => ((state.character.associatedPlayer = selectedOption.value, state)))}}/>
                         </Row>
-                    )
-                    }
+                    )}
+                    {!this.state.editMode && this.state.player.isGameMaster && (
+                        <Row className = "row justify-content-center">
+                            {this.state.character.isMage && (
+                                <Label className="text-primary">Mage</Label>
+                            )}
+                            <Label>Phase : {phaseNames[this.state.character.phase]}</Label>
+                            <Label>Player : {this.state.players.find(pl => pl._id === this.state.character.associatedPlayer)?.name}</Label>
+
+                        </Row>
+                    )}
+
+                    
                 </Card.Body>
                 <Card.Footer>
                     {this.state.editMode && (

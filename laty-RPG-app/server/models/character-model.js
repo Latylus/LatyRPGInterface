@@ -11,6 +11,7 @@ const Character = new Schema(
 
         phase : {type : Number , required : true},
 
+        isMage : {type : Boolean, required : true},
         //Stats
         determination: { type: Number, required: true },
         perception: { type: Number, required: true },
