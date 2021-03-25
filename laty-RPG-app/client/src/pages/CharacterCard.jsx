@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner, Row, Form, Col, ButtonGroup, ToggleButton} from 'react-bootstrap'
+import {Button, Card, Spinner, Row, Form, Col, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip, InputGroup} from 'react-bootstrap'
 import Select from 'react-select'
 import api from '../api'
 
@@ -20,21 +20,60 @@ const Label = styled.label`
 
 const baseStats = [
     {
-        determination : 'Determination',
-        perception : 'Perception',
+        determination : {
+            translation : 'Determination',
+            tooltip : 'Determination',
+        },
+        perception : {
+            translation : 'Perception',
+            tooltip : 'Perception',
+        },
     },
     {
-        nobility : "Noblesse",
-        ingenuity : "Ingéniosité" ,
-        spirituality : "Sipiritualité",
+        nobility :{
+            translation : 'Noblesse',
+            tooltip : 'Noblesse',
+        },
+        ingenuity : {
+            translation : 'Ingéniosité',
+            tooltip : 'Ingéniosité',
+        },
+        spirituality : {
+            translation : 'Sipiritualité',
+            tooltip : 'Sipiritualité',
+        },
     },
     {
-        bonusValor : "Valeur",
-        bonusScheming : "Manigance",
-        bonusEloquence : "Eloquence",
-        bonusDiplomacy : "Diplomacie",
-        bonusManipulation : "Manipulation",
-        bonusTheology : "Théologie",
+        bonusValor : {
+            translation : 'Valeur',
+            tooltip : 'Valeur',
+            dependency : ['determination', 'nobility'],
+        },
+        bonusScheming : {
+            translation : 'Manigance',
+            tooltip : 'Manigance',
+            dependency : ['determination', 'ingenuity'],
+        },
+        bonusEloquence :{
+            translation : 'Eloquence',
+            tooltip : 'Eloquence',
+            dependency : ['determination', 'spirituality'],
+        },
+        bonusDiplomacy : {
+            translation : 'Diplomacie',
+            tooltip : 'Diplomacie',
+            dependency : ['perception', 'nobility'],
+        },
+        bonusManipulation :{
+            translation : 'Manipulation',
+            tooltip : 'Manipulation',
+            dependency : ['perception', 'ingenuity'],
+        },
+        bonusTheology :{
+            translation : 'Théologie',
+            tooltip : 'Théologie',
+            dependency : ['perception', 'spirituality'],
+        },
     },
 ]
 
@@ -47,11 +86,22 @@ const phaseNames = [
 const magicStats = [
     {},
     {
-        magic : "Magie",
+        magic : {
+            translation : 'Magie',
+            tooltip : 'Magie',
+        },
     },
     {
-        bonusAracana : "Arcanes",
-        bonusSorcery : "Sorcellerie",
+        bonusArcana :{
+            translation : 'Arcanes',
+            tooltip : 'Arcanes',
+            dependency : ['determination', 'magic'],
+        },
+        bonusSorcery : {
+            translation : 'Sorcellerie',
+            tooltip : 'Sorcellerie',
+            dependency : ['perception', 'magic'],
+        },
     }
 ]
 
@@ -97,13 +147,13 @@ class CharacterCard extends Component {
         await this.state.discordSendFunction(discordMessage)
     }
 
-    handleAbilityClick = async (statName, statTranslation) => {
+    handleAbilityClick = async (statName, statTranslation, dependencyArray) => {
         var rollValue = Math.floor(Math.random()*20+1)
         const message = {
             // "content": body.message,
             embeds: [{
                 title: `A ${statTranslation} roll was requested by ${this.state.player.name} for ${this.state.character.name}`,
-                description: `Result : ${ +rollValue + +this.state.character[statName]} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})`
+                description: `Result : ${ +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray)} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation}) + ${this.getDependencySumValue(dependencyArray)} (${this.getDependencyTooltipDescription(dependencyArray)})`
             }]
         }        
 
@@ -157,17 +207,69 @@ class CharacterCard extends Component {
     //     )
     // }
 
-    renderOneStatBlock = (statName, statPhase, statTranslation) => {
+    getDependencySumValue = (dependencyArray)=>{
+        return dependencyArray !== undefined? dependencyArray.map(val => this.state.character[val]).reduce((a,b) => +a + +b, 0) :0
+    }
+
+
+    
+    findStatTranslation = (stat) =>{
+        var basePhaseStat = baseStats.find(phaseStats => Object.keys(phaseStats).find(key => key === stat))
+        if(basePhaseStat){
+            return basePhaseStat[stat].translation
+        }
+        else{
+            return magicStats.find(phaseStats => Object.keys(phaseStats).find(key => key === stat))[stat].translation
+        }
+    }
+
+    getDependencyTooltipDescription = (dependencyArray) =>{
+        return dependencyArray.map(stat => this.findStatTranslation(stat)).join('+')
+    }
+
+    getLabelForStat = (statTranslation, dependencyArray) =>{
+        if(dependencyArray){
+            return `${statTranslation} ${this.getDependencySumValue(dependencyArray)} +`
+        }
+        else{
+            return statTranslation
+        }
+    }
+
+    renderOneStatBlock = (statName, statPhase, statTranslation, tooltip, dependency) => {
                 return  (
                     <Form.Group key= {statName} controlId = {statName} className = "col-4">
-                        <Form.Label  onClick={()=> this.handleAbilityClick(statName, statTranslation)} style={{cursor:'pointer', margin : '12px'}} >{statTranslation}</Form.Label>
-                        <Col xs= {3}>
+                        {/* <OverlayTrigger
+                        key = {`${statName}overlay`}
+                        placement = 'top'
+                        overlay = {
+                            <Tooltip >{tooltip}</Tooltip >
+                        }> */}
 
-                        <Form.Control type = 'number' step = '1' min = '0' max = '30' style={{width : '60px'}}
-                        disabled = {!this.state.player.isGameMaster && statPhase !== this.state.character.phase}
-                        value = {this.state.character[statName]}
-                        onBlur= {() => this.handleUpdateCharacter()}
-                        onChange = {(event) => {this.setState(state => ((state.character[statName] = event.target.value, state)))}}/>
+                        <Form.Label  onClick={()=> this.handleAbilityClick(statName, statTranslation, dependency)} style={{cursor:'pointer', margin : '2px'}} >
+                            {statTranslation}
+                        </Form.Label>
+                        {/* </OverlayTrigger> */}
+                        <Col xs= {5}  >
+                        <InputGroup inline='true' style={{width : '115px', 'paddingTop' : '5px', 'paddingBottom' : '5px'}}>
+                            {dependency && (
+                                <OverlayTrigger
+                                key = {`${statName}overlay`}
+                                placement = 'top'
+                                overlay = {
+                                    <Tooltip >{this.getDependencyTooltipDescription(dependency)}</Tooltip >
+                                }>
+                                    <InputGroup.Prepend >
+                                        <InputGroup.Text>{`${this.getDependencySumValue(dependency)}+`}</InputGroup.Text>
+                                    </InputGroup.Prepend>
+                                </OverlayTrigger>
+                            )}
+                            <Form.Control type = 'number' step = '1' min = '0' max = '30' 
+                            disabled = {!this.state.player.isGameMaster && statPhase !== this.state.character.phase}
+                            value = {this.state.character[statName]}
+                            onBlur= {() => this.handleUpdateCharacter()}
+                            onChange = {(event) => {this.setState(state => ((state.character[statName] = event.target.value, state)))}}/>
+                        </InputGroup>
                         </Col>
                     </Form.Group>
                 )
@@ -182,9 +284,9 @@ class CharacterCard extends Component {
                             <Card.Subtitle className ="row justify-content-center">{phaseNames[phase]}</Card.Subtitle>
                             <hr style={{width:'50%', height :'0px', border : 0}}/>
                             <Form inline className = "row justify-content-center" >
-                                {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase, baseStats[phase][stat]))}
+                                {Object.keys(phaseStats).map( stat => this.renderOneStatBlock(stat, phase, baseStats[phase][stat].translation, baseStats[phase][stat].tooltip,  baseStats[phase][stat].dependency ))}
                                 {this.state.character.isMage && 
-                                    Object.keys(magicStats[phase]).map(stat => this.renderOneStatBlock(stat, phase, magicStats[phase][stat]))
+                                    Object.keys(magicStats[phase]).map(stat => this.renderOneStatBlock(stat, phase, magicStats[phase][stat].translation, magicStats[phase][stat].tooltip,  magicStats[phase][stat].dependency))
                                 }
                             </Form>
                             <hr style={{'backgroundImage':`url(./logo192.png)`}}/>
@@ -208,7 +310,7 @@ class CharacterCard extends Component {
         }
 
         return(           
-            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '40rem', "maxWidth" :'40rem'}}>
+            <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '45rem', "maxWidth" :'45rem'}}>
                 <Card.Header>
                     {!this.state.editMode && (
                         <Card.Title>
