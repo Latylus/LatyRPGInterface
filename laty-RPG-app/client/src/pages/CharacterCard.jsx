@@ -153,7 +153,9 @@ class CharacterCard extends Component {
             // "content": body.message,
             embeds: [{
                 title: `A ${statTranslation} roll was requested by ${this.state.player.name} for ${this.state.character.name}`,
-                description: `Result : ${ +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray)} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation}) + ${this.getDependencySumValue(dependencyArray)} (${this.getDependencyTooltipDescription(dependencyArray)})`
+                description:  dependencyArray? 
+                `Result : ${ +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray)} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation}) + ${this.getDependencySumValue(dependencyArray)} (${this.getDependencyTooltipDescription(dependencyArray)})`
+                :`Result : ${ +rollValue + +this.state.character[statName]} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})`
             }]
         }        
 
