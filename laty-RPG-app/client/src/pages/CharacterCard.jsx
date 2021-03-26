@@ -166,11 +166,13 @@ class CharacterCard extends Component {
         console.log("updating character")
         if(this.state.player.isGameMaster){
             await api.updateCharacterByIdForGM(this.state.character._id, this.state.character, this.state.authToken).then(res => {
+                this.state.character = res.data.value
                 // window.alert(`Character updated successfully`)
             })
         }
         else{
             await api.updateCharacterByIdForPlayer(this.state.character._id, this.state.character).then(res => {
+                this.state.character = res.data.value
                 // window.alert(`Character updated successfully`)
             })
         }        

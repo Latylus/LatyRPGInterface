@@ -60,7 +60,7 @@ updateCharacter = async (req, res) => {
 
         character.phase = body.phase
         character.isMage = body.isMage
-        
+
         character.determination = body.determination
         character.perception = body.perception
         
@@ -86,6 +86,7 @@ updateCharacter = async (req, res) => {
                 return res.status(200).json({
                     success: true,
                     id: character._id,
+                    value : character,
                     message: 'Character updated!',
                 })
             })
@@ -198,6 +199,7 @@ updateCharacterPartial = async (req, res) => {
                 return res.status(200).json({
                     success: true,
                     id: character._id,
+                    value : character,
                     message: 'Character updated!',
                 })
             })
