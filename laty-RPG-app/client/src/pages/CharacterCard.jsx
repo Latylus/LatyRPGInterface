@@ -240,7 +240,7 @@ class CharacterCard extends Component {
 
     renderOneStatBlock = (statName, statPhase, statTranslation, tooltip, dependency) => {
                 return  (
-                    <Form.Group key= {statName} controlId = {statName} className = "col-4">
+                    <Form.Group key= {this.state.character._id+statName} controlId = {this.state.character._id+statName} className = "col-4">
                         {/* <OverlayTrigger
                         key = {`${statName}overlay`}
                         placement = 'top'
@@ -333,7 +333,7 @@ class CharacterCard extends Component {
                     {this.renderStatBlock()}
                     
                     <Form inline className = "row justify-content-center" >
-                        <Form.Group  controlId = 'willpower' className = "col-4">
+                        <Form.Group  controlId = {`${this.state.character._id}willpower`} className = "col-4">
                             <Form.Label>Volonté</Form.Label>
                             <Col xs= {3}>
 
@@ -352,15 +352,15 @@ class CharacterCard extends Component {
                         </Row>
                         )}
                         {this.state.player.isGameMaster &&(
-                            <Form.Group  controlId = 'deaths' className = "col-4">
+                            <Form.Group  controlId = {`${this.state.character._id}deaths`} className = "col-4">
                                 <Form.Label>Morts</Form.Label>
                                 <Col xs= {3}>
 
                                 <Form.Control type = 'number' step = '1' min = '0' max = '4' style={{width : '60px'}}
                                 value = {this.state.character.deaths}
                                 onBlur= {() => this.handleUpdateCharacter()}
-                                onChange = {(event) => {this.setState(state => ((state.character.deaths = event.target.value, state)))}}/>
-                                </Col>
+                                onChange = {(event) => {this.setState(state => ((state.character.deaths = +event.target.value, state)))}}/>
+                            </Col>
                             </Form.Group>
                         )
                             

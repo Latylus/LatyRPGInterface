@@ -6,31 +6,31 @@ const Character = new Schema(
         name: { type: String, required: true },
         title : {type : String, required : false},
 
-        deaths : {type : Number , required : false},
-        willpower : {type : Number , required : true},
+        deaths : {type : Number , required : false, min :0, max :4},
+        willpower : {type : Number , required : true, min: -10, max : 30},
 
-        phase : {type : Number , required : true},
+        phase : {type : Number , required : true, min:0, max:2},
 
         isMage : {type : Boolean, required : true},
         //Stats
-        determination: { type: Number, required: true },
-        perception: { type: Number, required: true },
+        determination: { type: Number, required: true, min:0 , max :30 },
+        perception: { type: Number, required: true, min:0 , max :30 },
 
-        nobility: { type: Number, required: true },
-        ingenuity: { type: Number, required: true },
-        spirituality: { type: Number, required: true },
+        nobility: { type: Number, required: true, min:0 , max :30 },
+        ingenuity: { type: Number, required: true, min:0 , max :30 },
+        spirituality: { type: Number, required: true, min:0 , max :30 },
 
-        magic : {type : Number, required : false},
+        magic : {type : Number, required : false, min:0 , max :30},
 
-        bonusValor: { type: Number, required: true },
-        bonusScheming: { type: Number, required: true },
-        bonusEloquence: { type: Number, required: true },
-        bonusDiplomacy: { type: Number, required: true },
-        bonusManipulation: { type: Number, required: true },
-        bonusTheology: { type: Number, required: true },
+        bonusValor: { type: Number, required: true, min:0 , max :30 },
+        bonusScheming: { type: Number, required: true, min:0 , max :30 },
+        bonusEloquence: { type: Number, required: true, min:0 , max :30 },
+        bonusDiplomacy: { type: Number, required: true, min:0 , max :30 },
+        bonusManipulation: { type: Number, required: true, min:0 , max :30 },
+        bonusTheology: { type: Number, required: true, min:0 , max :30 },
 
-        bonusArcana  : {type : Number, required : false},
-        bonusSorcery : {type : Number, required: false},
+        bonusArcana  : {type : Number, required : false, min:0 , max :30},
+        bonusSorcery : {type : Number, required: false, min:0 , max :30},
 
         // non RPG
         associatedPlayer:  {type: Schema.Types.ObjectId, ref : 'players'},
