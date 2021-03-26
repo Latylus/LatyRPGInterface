@@ -321,11 +321,33 @@ class CharacterCard extends Component {
             <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '45rem', "maxWidth" :'45rem'}}>
                 <Card.Header>
                     {!this.state.editMode && (
+                        <div>
                         <Card.Title>
                             {this.state.character.name}
                         </Card.Title>
+                        <Card.Subtitle>
+                            {this.state.character.title}
+                        </Card.Subtitle>
+                        </div>
                     )}
-                    {this.state.editMode && (<InputText type = 'string' value= {this.state.character.name} onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/>)}
+                    {this.state.editMode && (
+                        <Form inline >
+                            <Col xs={4}>
+                                <Form.Control 
+                                type = 'string' 
+                                value= {this.state.character.name} 
+                                placeholder = "Name"
+                                onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/> 
+                            </Col>
+                            <Col xs={7}>
+                                <Form.Control style={{width:"100%"}} 
+                                type = 'string' 
+                                value= {this.state.character.title} 
+                                placeholder = "Title"
+                                onChange={(event) => {this.setState(state => ((state.character.title = event.target.value, state)))}}/> 
+                            </Col>
+                        </Form>
+                    )}
                     
                 </Card.Header>
                 {/* {!this.state.editMode && (
