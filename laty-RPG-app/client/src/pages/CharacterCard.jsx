@@ -5,14 +5,6 @@ import api from '../api'
 
 import styled from 'styled-components'
 
-const InputText = styled.input.attrs({
-    className: 'form-control',
-})`
-    margin: 5px;
-    width : 40%;
-    float : center;
-`
-
 const Label = styled.label`
     margin: 5px;
     float: left;
