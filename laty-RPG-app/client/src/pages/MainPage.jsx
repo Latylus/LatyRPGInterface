@@ -255,7 +255,7 @@ class MainPage extends Component {
                             isLoading = {this.state.isLoading}
                             placeholder = "Select a player"
                             onChange = {this.handlePlayerSelection}/>
-                            <div class="w-100"></div>
+                            <div className="w-100"></div>
                             
                             <Button className = "mt-4 mx-auto" block
                             variant = "secondary"

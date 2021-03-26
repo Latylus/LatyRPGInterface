@@ -141,16 +141,35 @@ class CharacterCard extends Component {
 
     handleAbilityClick = async (statName, statTranslation, dependencyArray) => {
         var rollValue = Math.floor(Math.random()*20+1)
+
+        var fields = [
+            {
+                name : statTranslation,
+                value : dependencyArray? +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray) : +rollValue + +this.state.character[statName],
+            },
+            {name : '1d20', value : `[${rollValue}](Coucou)` , inline : true},
+            {name : `${statTranslation}` , value : `+ [${this.state.character[statName]}](https://www.google.com)`, inline : true},
+        ]
+        if(dependencyArray){
+            fields.push({
+                name : this.getDependencyTooltipDescription(dependencyArray),
+                value : `+ ${this.getDependencySumValue(dependencyArray)}`,
+                inline : true
+            })
+        }
         const message = {
             // "content": body.message,
             embeds: [{
-                title: `A ${statTranslation} roll was requested by ${this.state.player.name} for ${this.state.character.name}`,
-                description:  dependencyArray? 
-                `Result : ${ +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray)} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation}) + ${this.getDependencySumValue(dependencyArray)} (${this.getDependencyTooltipDescription(dependencyArray)})`
-                :`Result : ${ +rollValue + +this.state.character[statName]} = ${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})`
+                author: {
+                    name : `${this.state.character.name} ${this.state.character.title}`
+                },
+                footer: {
+                    text : `Requested by ${this.state.player.name}`
+                },
+                fields:fields
             }]
-        }        
-
+        }
+        
         await this.sendDiscordMessage(message)
     }
 
