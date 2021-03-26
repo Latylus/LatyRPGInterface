@@ -34,6 +34,7 @@ const Character = new Schema(
 
         // non RPG
         associatedPlayer:  {type: Schema.Types.ObjectId, ref : 'players'},
+        iconUrl : {type: String, required : false},
     },
     { timestamps: true },
 )

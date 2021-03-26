@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Card, Spinner, Row, Form, Col, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip, InputGroup} from 'react-bootstrap'
+import {Button, Card, Spinner, Row, Form, Col, ButtonGroup, ToggleButton, OverlayTrigger, Tooltip, InputGroup, Image} from 'react-bootstrap'
 import Select from 'react-select'
 import api from '../api'
 
@@ -142,6 +142,7 @@ class CharacterCard extends Component {
     handleAbilityClick = async (statName, statTranslation, dependencyArray) => {
         var rollValue = Math.floor(Math.random()*20+1)
         const message = {
+            avatar_url: this.state.character.iconUrl,
             // "content": body.message,
             embeds: [{
                 author: {
@@ -319,17 +320,23 @@ class CharacterCard extends Component {
             <Card border = {this.state.editMode? "primary" : "dark"} style= {{"minWidth" : '45rem', "maxWidth" :'45rem'}}>
                 <Card.Header>
                     {!this.state.editMode && (
-                        <div>
-                        <Card.Title>
-                            {this.state.character.name}
-                        </Card.Title>
-                        <Card.Subtitle>
-                            {this.state.character.title}
-                        </Card.Subtitle>
-                        </div>
+                        <Row>
+                            <Col>
+                            <Card.Title>
+                                {this.state.character.name}
+                            </Card.Title>
+                            <Card.Subtitle>
+                                {this.state.character.title}
+                            </Card.Subtitle>
+                            </Col>
+                            <Col className="col-auto">
+                            <Image src= {this.state.character.iconUrl} roundedCircle style={{maxWidth:'50px', maxHeight : '50px'}} />
+                            </Col>
+                        </Row>
                     )}
                     {this.state.editMode && (
-                        <Form inline >
+                        <Form>
+                        <Form.Row>
                             <Col xs={4}>
                                 <Form.Control 
                                 type = 'string' 
@@ -337,16 +344,28 @@ class CharacterCard extends Component {
                                 placeholder = "Name"
                                 onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/> 
                             </Col>
-                            <Col xs={5}>
+                            <Col xs={8}>
+                                <Form.Control style={{width:"100%"}} 
+                                type = 'string' 
+                                value= {this.state.character.iconUrl} 
+                                placeholder = "Icon url"
+                                onChange={(event) => {this.setState(state => ((state.character.iconUrl = event.target.value, state)))}}/> 
+                            </Col>
+                            
+                            {/* <Col>
+                                <Form.File id="iconUpload" data-browse="Upload Icon"/>
+                            </Col> */}
+                        </Form.Row>
+                        <Form.Row>
+                            
+                            <Col>
                                 <Form.Control style={{width:"100%"}} 
                                 type = 'string' 
                                 value= {this.state.character.title} 
                                 placeholder = "Title"
                                 onChange={(event) => {this.setState(state => ((state.character.title = event.target.value, state)))}}/> 
                             </Col>
-                            {/* <Col>
-                                <Form.File id="iconUpload" data-browse="Upload Icon"/>
-                            </Col> */}
+                        </Form.Row>
                         </Form>
                     )}
                     

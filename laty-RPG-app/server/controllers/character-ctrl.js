@@ -58,6 +58,8 @@ updateCharacter = async (req, res) => {
         character.deaths = body.deaths
         character.willpower = body.willpower
 
+        character.iconUrl = body.iconUrl
+
         character.phase = body.phase
         character.isMage = body.isMage
 
@@ -161,6 +163,8 @@ updateCharacterPartial = async (req, res) => {
         }
         character.name = body.name
         character.title = body.title
+
+        character.iconUrl = body.iconUrl
 
         character.willpower = body.willpower
 
