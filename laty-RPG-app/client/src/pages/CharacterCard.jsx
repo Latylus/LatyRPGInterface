@@ -337,13 +337,16 @@ class CharacterCard extends Component {
                                 placeholder = "Name"
                                 onChange={(event) => {this.setState(state => ((state.character.name = event.target.value, state)))}}/> 
                             </Col>
-                            <Col xs={7}>
+                            <Col xs={5}>
                                 <Form.Control style={{width:"100%"}} 
                                 type = 'string' 
                                 value= {this.state.character.title} 
                                 placeholder = "Title"
                                 onChange={(event) => {this.setState(state => ((state.character.title = event.target.value, state)))}}/> 
                             </Col>
+                            {/* <Col>
+                                <Form.File id="iconUpload" data-browse="Upload Icon"/>
+                            </Col> */}
                         </Form>
                     )}
                     

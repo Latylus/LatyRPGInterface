@@ -228,13 +228,13 @@ class MainPage extends Component {
                 {this.state.playerLoggedIn && this.renderPlayerEditingModal()}
                 <Row className = "justify-content-md-end">
                     {this.state.playerLoggedIn && (
-                        <Button className = "mt-4"
+                        <Button className = "mt-4 mr-2"
                         variant="primary" 
                         size = "sm"
                         onClick = {() => {this.componentDidMount(); this.childRef.current.handleRefresh();}}>Refresh</Button>
                     )}                    
                     {this.state.playerLoggedIn && (
-                        <Button className = "mt-4"
+                        <Button className = "mt-4 mr-2"
                         variant="secondary" 
                         size = "sm"
                         onClick = {() => this.setState({editingPlayer : true})}>Edit Player Info</Button>
