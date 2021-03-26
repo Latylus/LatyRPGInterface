@@ -272,7 +272,7 @@ class CharacterCard extends Component {
                                     </InputGroup.Prepend>
                                 </OverlayTrigger>
                             )}
-                            <Form.Control type = 'number' step = '1' min = '0' max = '30' 
+                            <Form.Control type = 'number' step = '1' min = '0' max = '30' style={{maxWidth:"60px"}}
                             disabled = {!this.state.player.isGameMaster && statPhase !== this.state.character.phase}
                             value = {this.state.character[statName]}
                             onBlur= {() => this.handleUpdateCharacter()}
