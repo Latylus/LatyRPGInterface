@@ -57,7 +57,7 @@ class CharacterDeck extends Component {
 
 
         return(
-            <CardDeck className = "d-flex flex-nowrap">                        
+            <CardDeck className = "d-flex flex-row flex-nowrap overflow-auto">                        
                 {this.state.charactersToDisplay && this.state.charactersToDisplay.map(char =>
                     <CharacterCard ref={this.childRefs[char._id]}
                     key={char._id} 

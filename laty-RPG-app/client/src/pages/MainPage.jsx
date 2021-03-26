@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
-import {Button, Row, Modal, Form, ButtonGroup, ToggleButton} from 'react-bootstrap'
+import {Button, Row, Modal, Form, ButtonGroup, ToggleButton, Container, Col} from 'react-bootstrap'
 import api from '../api'
 import CharacterDeck from './CharacterDeck'
 
@@ -222,7 +222,7 @@ class MainPage extends Component {
         this.childRef = React.createRef()
 
         return(
-            <div className = "container" style = {{height:"100vh"}}>
+            <Container fluid className = "justify-content-md-center" style = {{height:"100vh", width:"95vw"}}>
                 {this.state.requestedGMLogin && this.renderGMPasswordModal()}
                 {!this.state.playerLoggedIn && this.renderPlayerCreationModal()}
                 {this.state.playerLoggedIn && this.renderPlayerEditingModal()}
@@ -246,26 +246,30 @@ class MainPage extends Component {
                         onClick = {() => this.setState({playerLoggedIn : null, charactersToDisplay : [], authToken : "", passwordEntered : "", usePublicDiscordChannel : false})}>Log Out</Button>
                     )}
                 </Row>
-                <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
                     {!this.state.playerLoggedIn && (
-                        <Select className = "mt-4 col-md-3"
-                        options = { [{label : "Players", options : this.state.allPlayers.filter(player => !player.isGameMaster).map(player => {return {value : player._id, label : player.name}})}, 
-                        {label : "Gamemasters", options :this.state.allPlayers.filter(player => player.isGameMaster).map(player => {return {value : player._id, label : player.name}}) }]}
-                        isLoading = {this.state.isLoading}
-                        placeholder = "Select a player"
-                        onChange = {this.handlePlayerSelection}
-                    />
-                    )}
-                    {!this.state.playerLoggedIn && (
-                        <Button className = "mt-4 col-md-3"
-                        variant = "secondary"
-                        onClick = {() => this.setState({creatingPlayer : true})}>Create New Player</Button>
-                    )}
+                        <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
+                            <Col className = "justify-content-center " style = {{maxHeight:"20vh", maxWidth:"20vw", minWidth:"190px"}}>
+                            <Select className = "mt-4"
+                            options = { [{label : "Players", options : this.state.allPlayers.filter(player => !player.isGameMaster).map(player => {return {value : player._id, label : player.name}})}, 
+                            {label : "Gamemasters", options :this.state.allPlayers.filter(player => player.isGameMaster).map(player => {return {value : player._id, label : player.name}}) }]}
+                            isLoading = {this.state.isLoading}
+                            placeholder = "Select a player"
+                            onChange = {this.handlePlayerSelection}/>
+                            <div class="w-100"></div>
+                            
+                            <Button className = "mt-4 mx-auto" block
+                            variant = "secondary"
+                            onClick = {() => this.setState({creatingPlayer : true})}>Create New Player</Button>
+                            </Col>
+                        </Row>
+                        
 
+                    )}
+                <Row className = "align-items-center justify-content-md-center " style = {{height:"80vh"}} >
                     {this.state.playerLoggedIn && (<CharacterDeck ref={this.childRef}
-                    discordSendFunction = {this.handleDiscordMessaging}
-                    player = {this.state.playerLoggedIn}
-                    authToken = {this.state.authToken}/>)}
+                        discordSendFunction = {this.handleDiscordMessaging}
+                        player = {this.state.playerLoggedIn}
+                        authToken = {this.state.authToken}/>)}
                 </Row>
                 <Row>
                     <div className = "col-auto mr-auto">
@@ -304,7 +308,7 @@ class MainPage extends Component {
                         )}
                     </div>
                 </Row>
-            </div>)        
+            </Container>)        
     }
 }
 
