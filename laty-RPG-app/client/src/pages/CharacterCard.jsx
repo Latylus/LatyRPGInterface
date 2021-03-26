@@ -168,12 +168,16 @@ class CharacterCard extends Component {
             await api.updateCharacterByIdForGM(this.state.character._id, this.state.character, this.state.authToken).then(res => {
                 this.state.character = res.data.value
                 // window.alert(`Character updated successfully`)
+            }).catch(err => {
+                this.componentDidMount()
             })
         }
         else{
             await api.updateCharacterByIdForPlayer(this.state.character._id, this.state.character).then(res => {
                 this.state.character = res.data.value
                 // window.alert(`Character updated successfully`)
+            }).catch(err => {
+                this.componentDidMount()
             })
         }        
     }    
