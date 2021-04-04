@@ -13,8 +13,8 @@ const Label = styled.label`
 const baseStats = [
     {
         determination : {
-            translation : 'Determination',
-            tooltip : 'Determination',
+            translation : 'Détermination',
+            tooltip : 'Détermination',
         },
         perception : {
             translation : 'Perception',
@@ -31,8 +31,8 @@ const baseStats = [
             tooltip : 'Ingéniosité',
         },
         spirituality : {
-            translation : 'Sipiritualité',
-            tooltip : 'Sipiritualité',
+            translation : 'Spiritualité',
+            tooltip : 'Spiritualité',
         },
     },
     {
@@ -47,8 +47,8 @@ const baseStats = [
             dependency : ['determination', 'ingenuity'],
         },
         bonusEloquence :{
-            translation : 'Eloquence',
-            tooltip : 'Eloquence',
+            translation : 'Éloquence',
+            tooltip : 'Éloquence',
             dependency : ['determination', 'spirituality'],
         },
         bonusDiplomacy : {
