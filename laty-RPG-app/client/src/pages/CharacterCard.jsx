@@ -154,7 +154,7 @@ class CharacterCard extends Component {
                 title: `${statTranslation}`,
                 description:  dependencyArray? 
                 `**[${ +rollValue + +this.state.character[statName] + this.getDependencySumValue(dependencyArray)}](https://.com "${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation}) + ${this.getDependencySumValue(dependencyArray)} (${this.getDependencyTooltipDescription(dependencyArray)})")**`
-                :`**[${ +rollValue + +this.state.character[statName]}](https://.com "${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})**`,
+                :`**[${ +rollValue + +this.state.character[statName]}](https://.com "${rollValue} (1d20) + ${this.state.character[statName]} (${statTranslation})")**`,
             }]
         }        
 
